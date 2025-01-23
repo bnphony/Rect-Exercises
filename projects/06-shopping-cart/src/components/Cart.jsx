@@ -1,36 +1,50 @@
 import { useId } from 'react'
 import { ClearCartIcon, CartIcon } from './Icons.jsx'
+import { useCart } from '../hooks/useCart.js'
 import './Cart.css'
 
-export function Cart() {
+function CartItem ({ thumbnail, price, title, quantity, addToCart }) {
+  return (
+    <li>
+      <img src={thumbnail} alt={title} />
+
+      <div>
+        <strong>{title}</strong> - ${price}
+      </div>
+
+      <footer>
+        <small>Cantidad: {quantity}</small>
+        <button onClick={addToCart}>+</button>
+      </footer>
+    </li>
+  )
+}
+
+export function Cart () {
   const cartCheckboxId = useId()
+  const { cart, clearCart, addToCart } = useCart()
+
   return (
     <>
       <label className='cart-button' htmlFor={cartCheckboxId}>
         <CartIcon />
       </label>
-      <input id={cartCheckboxId} type='checkbox' hidden/>
+      <input id={cartCheckboxId} type='checkbox' hidden />
 
       <aside className='cart'>
-      <ul>
-        <li>
-          <img src='https://cdn.dummyjson.com/product-images/2/1.jpg' alt='iphone'/>
-        </li>
-        <div>
-          <strong>iPhone</strong> - $1499
-        </div>
+        <ul>
+          {cart.map(product => (
+            <CartItem
+              key={product.id}
+              addToCart={() => addToCart(product)}
+              {...product}
+            />
+          ))}
+        </ul>
 
-        <footer>
-          <small>
-            Cantidad: 1
-          </small>
-          <button>+</button>
-        </footer>
-      </ul>
-
-      <button>
-        <ClearCartIcon/>
-      </button>
+        <button style={{ marginBottom: '50px' }} onClick={clearCart}>
+          <ClearCartIcon />
+        </button>
       </aside>
     </>
   )
